@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    user-select: none;
+    -webkit-app-region: drag;
+  }
+
+  #pet-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  #pet-sprite {
+    width: 280px;
+    height: 380px;
+    object-fit: contain;
+    image-rendering: auto;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  /* 状态切换动画 */
+  #pet-sprite.state-transition {
+    animation: statePopIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  @keyframes statePopIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* 待机微呼吸 */
+  #pet-container.state-idle #pet-sprite {
+    animation: breathe 3s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.02) translateY(-4px); }
+  }
+
+  /* 思考时轻轻摇摆 */
+  #pet-container.state-thinking #pet-sprite {
+    animation: thinkingSwing 1.2s ease-in-out infinite;
+  }
+
+  @keyframes thinkingSwing {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(2deg); }
+    75% { transform: rotate(-2deg); }
+  }
+
+  /* 工作中微微抖动 */
+  #pet-container.state-working #pet-sprite {
+    animation: workingBuzz 0.3s ease-in-out infinite;
+  }
+
+  @keyframes workingBuzz {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+  }
+
+  /* 完成时跳跃 */
+  #pet-container.state-done #pet-sprite {
+    animation: doneJump 0.6s ease-out;
+  }
+
+  @keyframes doneJump {
+    0% { transform: scale(1) translateY(0); }
+    30% { transform: scale(1.1) translateY(-30px); }
+    60% { transform: scale(0.95) translateY(-10px); }
+    100% { transform: scale(1) translateY(0); }
+  }
+
+  /* 加油跳跃 */
+  #pet-container.state-cheer #pet-sprite {
+    animation: cheerJump 0.3s ease-in-out 3;
+  }
+
+  @keyframes cheerJump {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  /* 累了微微下沉 */
+  #pet-container.state-tired #pet-sprite {
+    animation: tiredSink 4s ease-in-out infinite;
+  }
+
+  @keyframes tiredSink {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+
+  /* 休息呼吸更缓 */
+  #pet-container.state-rest #pet-sprite {
+    animation: restBreathe 5s ease-in-out infinite;
+  }
+
+  @keyframes restBreathe {
+    0%, 100% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.01) translateY(-2px); }
+  }
+
+  /* 加载旋转 */
+  #pet-container.state-loading #pet-sprite {
+    animation: loadingSpin 2s linear infinite;
+  }
+
+  @keyframes loadingSpin {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    75% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  /* 错误抖动 */
+  #pet-container.state-error #pet-sprite {
+    animation: errorShake 0.5s ease-in-out 2;
+  }
+
+  @keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+
+  /* 右键菜单 */
+  #context-menu {
+    display: none;
+    position: fixed;
+    background: rgba(30, 30, 30, 0.95);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 4px 0;
+    min-width: 140px;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    -webkit-app-region: no-drag;
+  }
+
+  #context-menu .menu-item {
+    padding: 6px 16px;
+    color: #e0e0e0;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'Microsoft YaHei', sans-serif;
+  }
+
+  #context-menu .menu-item:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  #context-menu .menu-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 2px 0;
+  }
+
+  #context-menu .menu-item.current {
+    color: #7ec8ff;
+  }
+</style>
+</head>
+<body>
+
+<div id="pet-container" class="state-idle">
+  <img id="pet-sprite" src="sprites/idle.png" alt="桌宠" draggable="false" />
+</div>
+
+<div id="context-menu">
+  <div class="menu-item menu-state" data-state="idle">空闲/待机</div>
+  <div class="menu-item menu-state" data-state="thinking">思考中</div>
+  <div class="menu-item menu-state" data-state="working">工作中</div>
+  <div class="menu-item menu-state" data-state="study">学习中</div>
+  <div class="menu-item menu-state" data-state="loading">加载中</div>
+  <div class="menu-divider"></div>
+  <div class="menu-item menu-state" data-state="done">完成啦</div>
+  <div class="menu-item menu-state" data-state="cheer">加油</div>
+  <div class="menu-item menu-state" data-state="problem">遇到问题</div>
+  <div class="menu-item menu-state" data-state="error">出错了</div>
+  <div class="menu-item menu-state" data-state="tired">有点累了</div>
+  <div class="menu-item menu-state" data-state="rest">休息一下</div>
+  <div class="menu-item menu-state" data-state="bye">拜拜</div>
+  <div class="menu-divider"></div>
+  <div class="menu-item" id="menu-quit">退出桌宠</div>
+</div>
+
+<script src="renderer.js"></script>
+</body>
+</html>

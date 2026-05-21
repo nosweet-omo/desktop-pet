@@ -1,0 +1,22 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "command": "python e:/桌宠/set_state.py working"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "command": "python e:/桌宠/set_state.py done"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "command": "python e:/桌宠/set_state.py idle"
+      }
+    ]
+  }
+}
