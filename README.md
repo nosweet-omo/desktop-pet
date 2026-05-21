@@ -1,6 +1,20 @@
-# 桌宠 - 陪你写代码的桌面小伙伴
+# 波奇酱 - 陪你写代码的桌面小伙伴
 
 一只会在你写代码时陪你、根据 Claude Code 状态自动切换表情的桌面宠物。
+
+## 状态一览
+
+| 空闲 | 思考中 | 工作中 | 学习中 |
+|------|--------|--------|--------|
+| ![idle](sprites/idle.png) | ![thinking](sprites/thinking.png) | ![working](sprites/working.png) | ![study](sprites/study.png) |
+
+| 加载中 | 完成啦 | 加油 | 遇到问题 |
+|--------|--------|------|----------|
+| ![loading](sprites/loading.png) | ![done](sprites/done.png) | ![cheer](sprites/cheer.png) | ![problem](sprites/problem.png) |
+
+| 出错了 | 有点累了 | 休息一下 | 拜拜 |
+|--------|----------|----------|------|
+| ![error](sprites/error.png) | ![tired](sprites/tired.png) | ![rest](sprites/rest.png) | ![bye](sprites/bye.png) |
 
 ## 功能
 
@@ -29,10 +43,10 @@ python pet.py
 
 ## Claude Code 联动
 
-项目已配置 `.claude/settings.local.json`，Claude Code 会在以下时机自动通知桌宠：
+项目已配置 `.claude/settings.local.json`，Claude Code 会在以下时机自动通知波奇酱：
 
-| 时机 | 桌宠状态 |
-|------|----------|
+| 时机 | 状态 |
+|------|------|
 | 收到消息 | 进入思考循环 |
 | 执行工具 | 工作中 |
 | 工具完成 | 短暂"完成"后继续思考 |
@@ -41,7 +55,7 @@ python pet.py
 
 ### HTTP API
 
-桌宠在 `127.0.0.1:9527` 提供 HTTP 接口：
+波奇酱在 `127.0.0.1:9527` 提供 HTTP 接口：
 
 ```bash
 # 获取当前状态
